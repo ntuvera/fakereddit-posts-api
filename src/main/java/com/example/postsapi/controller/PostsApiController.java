@@ -25,8 +25,8 @@ public class PostsApiController {
             value = "Create a post",
             notes = "Allows a user to create a post. Only logged in users can create posts")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "title", value = "Fake post title", required = true, dataType = "string", paramType = "query"),
-            @ApiImplicitParam(name = "description", value = "Fake post description", required = false, dataType = "string", paramType = "query"),
+            @ApiImplicitParam(name = "title", value = "The title of a post. This field is required", required = true, dataType = "string", paramType = "query"),
+            @ApiImplicitParam(name = "description", value = "The content of a post. This field is not required", required = false, dataType = "string", paramType = "query"),
             @ApiImplicitParam(name = "id", value = "User ID", required = true, dataType = "long", paramType = "query")
     })
     @ApiResponses(value = {
@@ -35,8 +35,8 @@ public class PostsApiController {
     })
     public Post createPost(
             @ApiParam(
-                    name = "params",
-                    value = "set of login parameters in JSON format",
+                    name = "Params",
+                    value = "set of post parameters in JSON format",
                     example = "{\"title\": \"Hi, I'm a fake post title\", \"description\": \"Hi, I'm a fake post description\"}")
             @RequestBody Post newPost,
             @RequestHeader("userId") int userId) {
@@ -60,7 +60,7 @@ public class PostsApiController {
 
     @ApiOperation(
             value = "Get posts by user ID",
-            notes = "Allows a user to get all posts created by a given user's ID",
+            notes = "Allows a user to see all posts created by a given user's ID",
             response = Iterable.class
     )
     @GetMapping("/user/post")
@@ -76,12 +76,12 @@ public class PostsApiController {
 //    }
 
     @ApiOperation(
-            value = "Add a comment to a post",
-            notes = "Allows a user to add a comment to a post",
+            value = "Gets comments by post ID",
+            notes = "Allows a user to see all comments from a given post's ID",
             response = Iterable.class
     )
     @GetMapping("/{postId}/comment")
-    public List<CommentBean> addCommentToPost(@PathVariable int postId, @RequestHeader("userId") Integer userId) {
+    public List<CommentBean> getCommentsByPostId(@PathVariable int postId, @RequestHeader("userId") Integer userId) {
         return commentClient.getCommentsByPostId(postId);
     }
 
