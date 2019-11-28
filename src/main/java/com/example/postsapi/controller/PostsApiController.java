@@ -26,8 +26,7 @@ public class PostsApiController {
             notes = "Allows a user to create a post. Only logged in users can create posts")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "title", value = "The title of a post. This field is required", required = true, dataType = "string", paramType = "query"),
-            @ApiImplicitParam(name = "description", value = "The content of a post. This field is not required", required = false, dataType = "string", paramType = "query"),
-            @ApiImplicitParam(name = "id", value = "User ID", required = true, dataType = "long", paramType = "query")
+            @ApiImplicitParam(name = "description", value = "The content of a post. This field is not required", required = false, dataType = "string", paramType = "query")
     })
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Successfully created a post"),
@@ -36,7 +35,7 @@ public class PostsApiController {
     public Post createPost(
             @ApiParam(
                     name = "Params",
-                    value = "set of post parameters in JSON format",
+                    value = "The body of the post that the user wants to create. Expects JSON as format",
                     example = "{\"title\": \"Hi, I'm a fake post title\", \"description\": \"Hi, I'm a fake post description\"}")
             @RequestBody Post newPost,
             @RequestHeader("userId") int userId) {
@@ -87,7 +86,7 @@ public class PostsApiController {
 
     @ApiOperation(
             value = "Find a post by post ID",
-            notes = "Allows the client to find a post by post ID if it exists",
+            notes = "A feign endpoint that allows the client to find a post by post ID if it exists",
             response = Optional.class
     )
     @GetMapping("identify/{postId}")
