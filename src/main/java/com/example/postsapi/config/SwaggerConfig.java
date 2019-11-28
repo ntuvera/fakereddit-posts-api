@@ -23,7 +23,6 @@ public class SwaggerConfig {
                 .apis(RequestHandlerSelectors.basePackage("com.example.postsapi.controller"))
                 .paths(PathSelectors.any())
                 .build()
-                .ignoredParameterTypes()
                 .apiInfo(apiEndPointsInfo());
     }
 

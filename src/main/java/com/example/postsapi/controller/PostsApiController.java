@@ -21,8 +21,9 @@ public class PostsApiController {
     CommentClient commentClient;
 
     @PostMapping("/")
-    @ApiOperation(value = "",
-            notes = "Only logged in users can create posts")
+    @ApiOperation(
+            value = "Create a post",
+            notes = "Allows a user to create a post. Only logged in users can create posts")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "title", value = "Fake post title", required = true, dataType = "string", paramType = "query"),
             @ApiImplicitParam(name = "description", value = "Fake post description", required = false, dataType = "string", paramType = "query"),
@@ -45,7 +46,10 @@ public class PostsApiController {
         return null;
     }
 
-    @ApiOperation(value = "Retrieves a list of all available posts", response = Iterable.class)
+    @ApiOperation(
+            value = "Show all available posts",
+            notes = "Allows a user to see a list of all posts found in the database. Users do not need to be logged in to access all posts",
+            response = Iterable.class)
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Successfully retrieved list of posts")
     })
@@ -54,6 +58,11 @@ public class PostsApiController {
         return postService.listPosts();
     }
 
+    @ApiOperation(
+            value = "Get posts by user ID",
+            notes = "Allows a user to get all posts created by a given user's ID",
+            response = Iterable.class
+    )
     @GetMapping("/user/post")
     public Iterable<Post> getPostsByUserId(@RequestHeader("userId") Integer userId) {
         return postService.getPostByUserId(userId);
@@ -66,13 +75,21 @@ public class PostsApiController {
 //        return "Post " + postId + " Deleted";
 //    }
 
-    // Feign Client Comment routing
+    @ApiOperation(
+            value = "Add a comment to a post",
+            notes = "Allows a user to add a comment to a post",
+            response = Iterable.class
+    )
     @GetMapping("/{postId}/comment")
     public List<CommentBean> addCommentToPost(@PathVariable int postId, @RequestHeader("userId") Integer userId) {
         return commentClient.getCommentsByPostId(postId);
     }
 
-    // Feign Client Get Post By Id
+    @ApiOperation(
+            value = "Find a post by post ID",
+            notes = "Allows the client to find a post by post ID if it exists",
+            response = Optional.class
+    )
     @GetMapping("identify/{postId}")
     public Optional<Post> findPostById(@PathVariable int postId) {
         return postService.findById(postId);
