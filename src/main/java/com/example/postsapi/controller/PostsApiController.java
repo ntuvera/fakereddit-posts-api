@@ -4,8 +4,7 @@ import com.example.postsapi.bean.CommentBean;
 import com.example.postsapi.feign.CommentClient;
 import com.example.postsapi.model.Post;
 import com.example.postsapi.service.PostServiceImpl;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,14 +21,34 @@ public class PostsApiController {
     CommentClient commentClient;
 
     @PostMapping("/")
-    @ApiOperation(value = "AHHHHHHHHHHHHH")
-    public Post createPost(@RequestBody Post newPost, @RequestHeader("userId") int userId) {
+    @ApiOperation(value = "",
+            notes = "Only logged in users can create posts")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "title", value = "Fake post title", required = true, dataType = "string", paramType = "query"),
+            @ApiImplicitParam(name = "description", value = "Fake post description", required = false, dataType = "string", paramType = "query"),
+            @ApiImplicitParam(name = "id", value = "User ID", required = true, dataType = "long", paramType = "query")
+    })
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Successfully created a post"),
+            @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")
+    })
+    public Post createPost(
+            @ApiParam(
+                    name = "params",
+                    value = "set of login parameters in JSON format",
+                    example = "{\"title\": \"Hi, I'm a fake post title\", \"description\": \"Hi, I'm a fake post description\"}")
+            @RequestBody Post newPost,
+            @RequestHeader("userId") int userId) {
         if(newPost.getTitle().trim().length() >0) {
             return postService.createPost(newPost, userId);
         }
         return null;
     }
 
+    @ApiOperation(value = "Retrieves a list of all available posts", response = Iterable.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Successfully retrieved list of posts")
+    })
     @GetMapping("/list")
     public Iterable<Post> getAllPosts() {
         return postService.listPosts();
