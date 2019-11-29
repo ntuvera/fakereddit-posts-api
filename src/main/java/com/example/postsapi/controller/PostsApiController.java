@@ -59,10 +59,14 @@ public class PostsApiController {
 
     @ApiOperation(
             value = "Show all available posts",
-            notes = "Allows a user to see a list of all posts found in the database. Users do not need to be logged in to access all posts",
-            response = Iterable.class)
+            notes = "Allows a user to see a list of all posts found in the database. Users do not need to be logged in to access all posts")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Successfully retrieved list of posts")
+            @ApiResponse(
+                    code = 200,
+                    message = "List of all found posts",
+                    response = Post.class,
+                    responseContainer = "List"),
+            @ApiResponse(code = 404, message = "The resource you were trying to reach was not found")
     })
     @GetMapping("/list")
     public Iterable<Post> getAllPosts() {
