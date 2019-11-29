@@ -30,14 +30,19 @@ public class PostsApiController {
     })
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Successfully created a post"),
-            @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")
+            @ApiResponse(code = 404, message = "The resource you were trying to reach was not found")
     })
     public Post createPost(
             @ApiParam(
-                    name = "Params",
+                    name = "newPost",
                     value = "The body of the post that the user wants to create. Expects JSON as format",
                     example = "{\"title\": \"Hi, I'm a fake post title\", \"description\": \"Hi, I'm a fake post description\"}")
             @RequestBody Post newPost,
+            @ApiParam(
+                    name = "User ID",
+                    value = "The ID of the user creating the post",
+                    example = "1"
+            )
             @RequestHeader("userId") int userId) {
         if(newPost.getTitle().trim().length() >0) {
             return postService.createPost(newPost, userId);
@@ -62,10 +67,25 @@ public class PostsApiController {
             notes = "Allows a user to see all posts created by a given user's ID",
             response = Iterable.class
     )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    code = 200,
+                    message = "List of found user posts",
+                    response = Iterable.class,
+                    examples = @Example(
+                        value = {
+                                @ExampleProperty(
+                                        mediaType = "Example JSON",
+                                        value = "Sample JSON")})),
+            @ApiResponse(code = 404, message = "The resource you were trying to reach was not found")
+    })
     @GetMapping("/user/post")
-    public Iterable<Post> getPostsByUserId(@RequestHeader("userId") Integer userId) {
+    public Iterable<Post> getPostsByUserId(
+            @ApiParam(value = "User ID", required = true, example = "1")
+            @RequestHeader("userId") Integer userId) {
         return postService.getPostByUserId(userId);
     }
+
     // TODO: reactivate when we find a way to go around swagger-ui.html
 //    @DeleteMapping("/{postId}")
 //    @RequestMapping(value = "/{postId}", method = RequestMethod.DELETE)
@@ -77,10 +97,12 @@ public class PostsApiController {
     @ApiOperation(
             value = "Gets comments by post ID",
             notes = "Allows a user to see all comments from a given post's ID",
-            response = Iterable.class
+            response = List.class
     )
     @GetMapping("/{postId}/comment")
-    public List<CommentBean> getCommentsByPostId(@PathVariable int postId, @RequestHeader("userId") Integer userId) {
+    public List<CommentBean> getCommentsByPostId(
+            @PathVariable int postId,
+            @RequestHeader("userId") Integer userId) {
         return commentClient.getCommentsByPostId(postId);
     }
 
