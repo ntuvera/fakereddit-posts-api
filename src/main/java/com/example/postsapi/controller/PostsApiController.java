@@ -25,23 +25,30 @@ public class PostsApiController {
             value = "Create a post",
             notes = "Allows a user to create a post. Only logged in users can create posts")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "title", value = "The title of a post. This field is required", required = true, dataType = "string", paramType = "query"),
-            @ApiImplicitParam(name = "description", value = "The content of a post. This field is not required", required = false, dataType = "string", paramType = "query")
+            @ApiImplicitParam(
+                    name = "newPost",
+                    value = "The body of the post that the user wants to create. Expects JSON as format. The title of the post is required while the description may be left blank",
+                    example =
+                            "{\n" +
+                            "  \"title\": \"Hi, I'm a sample post title\",\n" +
+                            "  \"description\": \"Hi, I'm a sample post description. Leave me blank if you'd like.\"\n" +
+                            "}",
+                    required = true,
+                    dataType = "string",
+                    paramType = "body"
+            )
     })
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Successfully created a post"),
             @ApiResponse(code = 404, message = "The resource you were trying to reach was not found")
     })
     public Post createPost(
-            @ApiParam(
-                    name = "newPost",
-                    value = "The body of the post that the user wants to create. Expects JSON as format",
-                    example = "{\"title\": \"Hi, I'm a fake post title\", \"description\": \"Hi, I'm a fake post description\"}")
             @RequestBody Post newPost,
             @ApiParam(
-                    name = "User ID",
-                    value = "The ID of the user creating the post",
-                    example = "1"
+                    name = "userId",
+                    value = "The ID of the user creating the post. This value is extracted from the Bearer token of the incoming request's Authorization header.",
+                    example = "1",
+                    required = true
             )
             @RequestHeader("userId") int userId) {
         if(newPost.getTitle().trim().length() >0) {
