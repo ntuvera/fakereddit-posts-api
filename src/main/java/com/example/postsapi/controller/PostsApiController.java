@@ -39,7 +39,7 @@ public class PostsApiController {
             )
     })
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Successfully created a post"),
+            @ApiResponse(code = 200, message = "OK"),
             @ApiResponse(code = 404, message = "The resource you were trying to reach was not found")
     })
     public Post createPost(
@@ -58,12 +58,12 @@ public class PostsApiController {
     }
 
     @ApiOperation(
-            value = "Show all available posts",
+            value = "Get all posts",
             notes = "Allows a user to see a list of all posts found in the database. Users do not need to be logged in to access all posts")
     @ApiResponses(value = {
             @ApiResponse(
                     code = 200,
-                    message = "List of all found posts",
+                    message = "OK",
                     response = Post.class,
                     responseContainer = "List"),
             @ApiResponse(code = 404, message = "The resource you were trying to reach was not found")
@@ -80,7 +80,7 @@ public class PostsApiController {
     @ApiResponses(value = {
             @ApiResponse(
                     code = 200,
-                    message = "List of found user posts",
+                    message = "OK",
                     response = Post.class,
                     responseContainer = "List",
                     examples = @Example(
@@ -109,7 +109,7 @@ public class PostsApiController {
 //    }
 
     @ApiOperation(
-            value = "Gets comments by post ID",
+            value = "Get comments by post ID",
             notes = "Allows a user to see all comments from a given post's ID",
             response = List.class
     )
@@ -122,11 +122,22 @@ public class PostsApiController {
 
     @ApiOperation(
             value = "Find a post by post ID",
-            notes = "A feign endpoint that allows the client to find a post by post ID if it exists",
-            response = Optional.class
+            notes = "A feign endpoint that allows the client to find a post by post ID if it exists"
     )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    code = 200,
+                    message = "OK",
+                    response = Post.class),
+            @ApiResponse(code = 404, message = "The resource you were trying to reach was not found")
+    })
     @GetMapping("identify/{postId}")
-    public Optional<Post> findPostById(@PathVariable int postId) {
+    public Optional<Post> findPostById(
+            @ApiParam(
+                    value = "The ID of the post to find. This value is extracted from the {postId} path variable. This value is required.",
+                    required = true,
+                    example = "1")
+            @PathVariable int postId) {
         return postService.findById(postId);
     }
 }
