@@ -35,21 +35,17 @@ public class PostsApiController {
                             "}",
                     required = true,
                     dataType = "string",
-                    paramType = "body"
-            )
-    })
+                    paramType = "body")})
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "OK"),
-            @ApiResponse(code = 404, message = "The resource you were trying to reach was not found")
-    })
+            @ApiResponse(code = 404, message = "The resource you were trying to reach was not found")})
     public Post createPost(
             @RequestBody Post newPost,
             @ApiParam(
                     name = "userId",
                     value = "The ID of the user creating the post. This value is extracted from the Bearer token of the incoming request's Authorization header.",
                     example = "1",
-                    required = true
-            )
+                    required = true)
             @RequestHeader("userId") int userId) {
         if(newPost.getTitle().trim().length() >0) {
             return postService.createPost(newPost, userId);
@@ -66,8 +62,7 @@ public class PostsApiController {
                     message = "OK",
                     response = Post.class,
                     responseContainer = "List"),
-            @ApiResponse(code = 404, message = "The resource you were trying to reach was not found")
-    })
+            @ApiResponse(code = 404, message = "The resource you were trying to reach was not found")})
     @GetMapping("/list")
     public Iterable<Post> getAllPosts() {
         return postService.listPosts();
@@ -75,8 +70,7 @@ public class PostsApiController {
 
     @ApiOperation(
             value = "Get posts by user ID",
-            notes = "Allows a user to see all posts created by a given user's ID"
-    )
+            notes = "Allows a user to see all posts created by a given user's ID")
     @ApiResponses(value = {
             @ApiResponse(
                     code = 200,
@@ -88,8 +82,7 @@ public class PostsApiController {
                                 @ExampleProperty(
                                         mediaType = "Example JSON",
                                         value = "Sample JSON")})),
-            @ApiResponse(code = 404, message = "The resource you were trying to reach was not found")
-    })
+            @ApiResponse(code = 404, message = "The resource you were trying to reach was not found")})
     @GetMapping("/user/post")
     public Iterable<Post> getPostsByUserId(
             @ApiParam(
@@ -110,27 +103,35 @@ public class PostsApiController {
 
     @ApiOperation(
             value = "Get comments by post ID",
-            notes = "Allows a user to see all comments from a given post's ID",
-            response = List.class
-    )
+            notes = "Allows a user to see all comments from a given post's ID")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    code = 200,
+                    message = "OK",
+                    response = CommentBean.class,
+                    responseContainer = "List"),
+            @ApiResponse(code = 404, message = "The resource you were trying to reach was not found")})
     @GetMapping("/{postId}/comment")
     public List<CommentBean> getCommentsByPostId(
+            @ApiParam(
+                    value = "The ID of the post to query for comments. This value is extracted from the {postId} path variable. This value is required.",
+                    required = true,
+                    example = "1")
             @PathVariable int postId,
+            // TODO: Is userId parameter needed?
             @RequestHeader("userId") Integer userId) {
         return commentClient.getCommentsByPostId(postId);
     }
 
     @ApiOperation(
             value = "Find a post by post ID",
-            notes = "A feign endpoint that allows the client to find a post by post ID if it exists"
-    )
+            notes = "A feign endpoint that allows the client to find a post by post ID if it exists")
     @ApiResponses(value = {
             @ApiResponse(
                     code = 200,
                     message = "OK",
                     response = Post.class),
-            @ApiResponse(code = 404, message = "The resource you were trying to reach was not found")
-    })
+            @ApiResponse(code = 404, message = "The resource you were trying to reach was not found")})
     @GetMapping("identify/{postId}")
     public Optional<Post> findPostById(
             @ApiParam(
