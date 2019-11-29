@@ -71,14 +71,14 @@ public class PostsApiController {
 
     @ApiOperation(
             value = "Get posts by user ID",
-            notes = "Allows a user to see all posts created by a given user's ID",
-            response = Iterable.class
+            notes = "Allows a user to see all posts created by a given user's ID"
     )
     @ApiResponses(value = {
             @ApiResponse(
                     code = 200,
                     message = "List of found user posts",
-                    response = Iterable.class,
+                    response = Post.class,
+                    responseContainer = "List",
                     examples = @Example(
                         value = {
                                 @ExampleProperty(
@@ -88,7 +88,10 @@ public class PostsApiController {
     })
     @GetMapping("/user/post")
     public Iterable<Post> getPostsByUserId(
-            @ApiParam(value = "User ID", required = true, example = "1")
+            @ApiParam(
+                    value = "The ID of the user creating the post. This value is extracted from the Bearer token of the incoming request's Authorization header.",
+                    required = true,
+                    example = "1")
             @RequestHeader("userId") Integer userId) {
         return postService.getPostByUserId(userId);
     }
