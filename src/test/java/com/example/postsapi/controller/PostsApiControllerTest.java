@@ -137,7 +137,20 @@ public class PostsApiControllerTest {
     }
 
     @Test
-    public void deletePost_ReturnStringMsg_Success() throws Exception {}
+    public void deletePost_ReturnStringMsg_Success() throws Exception {
+        RequestBuilder requestBuilder = MockMvcRequestBuilders
+                .delete("/{postId}", 1);
+
+        when(postService.deletePost(anyInt())).thenReturn("Post 1 Deleted");
+
+        MvcResult result = mockMvc
+                .perform(requestBuilder)
+                .andExpect(status().isOk())
+                .andExpect(content().string("Post 1 Deleted"))
+                .andReturn();
+
+        System.out.println(result.getResponse().getContentAsString());
+    }
 
     @Test
     public void getCommentsByPostId_ReturnsCommentsList_Success() throws Exception {
