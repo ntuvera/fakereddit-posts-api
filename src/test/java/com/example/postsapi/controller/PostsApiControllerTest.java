@@ -121,7 +121,6 @@ public class PostsApiControllerTest {
     public void getPostsByUserId_ReturnPostList_Success() throws Exception {
         RequestBuilder requestBuilder = MockMvcRequestBuilders
                 .get("/user/post")
-                .contentType(MediaType.APPLICATION_JSON)
                 .header("Authorization", "")
                 .header("userId", "1");
 
@@ -155,14 +154,15 @@ public class PostsApiControllerTest {
     @Test
     public void getCommentsByPostId_ReturnsCommentsList_Success() throws Exception {
         RequestBuilder requestBuilder = MockMvcRequestBuilders
-                .get("/{postId}/comment", 1);
+                .get("/{postId}/comment", 1)
+                .header("userId", "1");;
 
         when(commentClient.getCommentsByPostId(anyInt())).thenReturn(commentList);
 
         MvcResult result = mockMvc
                 .perform(requestBuilder)
                 .andExpect(status().isOk())
-//                .andExpect(content().json("[{\"id\":1,\"title\":\"Test Post Title\",\"description\":\"Test Post Description\",\"user_id\":1,\"user\":{\"username\":\"testUser\"}}]"))
+                .andExpect(content().json("[{\"id\":1,\"text\":\"Test Comment Text\",\"postId\":1,\"userId\":1}]"))
                 .andReturn();
 
         System.out.println(result.getResponse().getContentAsString());
