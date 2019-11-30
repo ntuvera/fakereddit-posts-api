@@ -26,10 +26,7 @@ public class PostsApiController {
     @PostMapping("/")
     @ApiOperation(value = "AHHHHHHHHHHHHH")
     public Post createPost(@RequestBody Post newPost, @RequestHeader("userId") int userId) throws NoPostTitleException {
-        if(newPost.getTitle().trim().length() >0) { // move this to service layer
             return postService.createPost(newPost, userId);
-        }
-        return null;
     }
 
     @GetMapping("/list")
