@@ -1,6 +1,7 @@
 package com.example.postsapi.service;
 
 import com.example.postsapi.bean.UserBean;
+import com.example.postsapi.exceptionhandler.NoPostTitleException;
 import com.example.postsapi.exceptionhandler.PostNotFoundException;
 import com.example.postsapi.feign.CommentClient;
 import com.example.postsapi.feign.UserClient;
@@ -24,10 +25,13 @@ public class PostServiceImpl implements PostService {
     CommentClient commentClient;
 
     @Override
-    public Post createPost(Post newPost, int userId) {
-        newPost.setUser_id(userId);
-        newPost.setUser(userClient.getUserById(userId));
-        return postRepository.save(newPost);
+    public Post createPost(Post newPost, int userId) throws NoPostTitleException {
+        if(newPost.getTitle().trim().length() > 0) {
+            newPost.setUser_id(userId);
+            newPost.setUser(userClient.getUserById(userId));
+            return postRepository.save(newPost);
+        }
+        throw new NoPostTitleException("Title is missing. Title is required in newPost body.");
     }
 
     @Override

@@ -1,6 +1,7 @@
 package com.example.postsapi.controller;
 
 import com.example.postsapi.bean.CommentBean;
+import com.example.postsapi.exceptionhandler.NoPostTitleException;
 import com.example.postsapi.exceptionhandler.PostNotFoundException;
 import com.example.postsapi.feign.CommentClient;
 import com.example.postsapi.model.Post;
@@ -24,8 +25,8 @@ public class PostsApiController {
 
     @PostMapping("/")
     @ApiOperation(value = "AHHHHHHHHHHHHH")
-    public Post createPost(@RequestBody Post newPost, @RequestHeader("userId") int userId) {
-        if(newPost.getTitle().trim().length() >0) {
+    public Post createPost(@RequestBody Post newPost, @RequestHeader("userId") int userId) throws NoPostTitleException {
+        if(newPost.getTitle().trim().length() >0) { // move this to service layer
             return postService.createPost(newPost, userId);
         }
         return null;
