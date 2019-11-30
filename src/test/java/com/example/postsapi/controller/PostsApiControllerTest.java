@@ -16,7 +16,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -157,5 +156,18 @@ public class PostsApiControllerTest {
     }
 
     @Test
-    public void findPostById_ReturnsPost_Success() throws Exception {}
+    public void findPostById_ReturnsPost_Success() throws Exception {
+        RequestBuilder requestBuilder = MockMvcRequestBuilders
+                .get("/identify/{postId}", 1);
+
+        when(postService.findById(anyInt())).thenReturn(java.util.Optional.of(post));
+
+        MvcResult result = mockMvc
+                .perform(requestBuilder)
+                .andExpect(status().isOk())
+                .andExpect(content().json("{\"id\":1,\"title\":\"Test Post Title\",\"description\":\"Test Post Description\",\"user_id\":1,\"user\":{\"username\":\"testUser\"}}"))
+                .andReturn();
+
+        System.out.println(result.getResponse().getContentAsString());
+    }
 }
