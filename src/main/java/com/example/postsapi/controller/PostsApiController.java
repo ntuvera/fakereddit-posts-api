@@ -4,6 +4,7 @@ import com.example.postsapi.bean.CommentBean;
 import com.example.postsapi.exceptionhandler.NoPostTitleException;
 import com.example.postsapi.exceptionhandler.PostNotFoundException;
 import com.example.postsapi.exceptionhandler.PostsNotFoundException;
+import com.example.postsapi.exceptionhandler.UserNotFoundException;
 import com.example.postsapi.feign.CommentClient;
 import com.example.postsapi.model.Post;
 import com.example.postsapi.service.PostServiceImpl;
@@ -36,7 +37,7 @@ public class PostsApiController {
     }
 
     @GetMapping("/user/post")
-    public Iterable<Post> getPostsByUserId(@RequestHeader("userId") Integer userId) throws PostsNotFoundException {
+    public Iterable<Post> getPostsByUserId(@RequestHeader("userId") Integer userId) throws PostsNotFoundException, UserNotFoundException {
         return postService.getPostByUserId(userId);
     }
     // TODO: reactivate when we find a way to go around swagger-ui.html

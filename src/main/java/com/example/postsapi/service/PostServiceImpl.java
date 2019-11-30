@@ -4,6 +4,7 @@ import com.example.postsapi.bean.UserBean;
 import com.example.postsapi.exceptionhandler.NoPostTitleException;
 import com.example.postsapi.exceptionhandler.PostNotFoundException;
 import com.example.postsapi.exceptionhandler.PostsNotFoundException;
+import com.example.postsapi.exceptionhandler.UserNotFoundException;
 import com.example.postsapi.feign.CommentClient;
 import com.example.postsapi.feign.UserClient;
 import com.example.postsapi.model.Post;
@@ -36,10 +37,15 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public String deletePost(int postId) {
-       postRepository.deleteById(postId);
-       commentClient.deleteCommmentsByPostId(postId);
-       return "post: " + postId + " successfully deleted";
+    public String deletePost(int postId) throws PostNotFoundException {
+        try {
+            postRepository.findById(postId);
+        } catch(Exception e) {
+            throw new PostNotFoundException("The post cannot be deleted. No post of post Id: " + postId + " exists.");
+        }
+        postRepository.deleteById(postId);
+        commentClient.deleteCommmentsByPostId(postId);
+        return "post: " + postId + " successfully deleted";
        // TODO: how to sort out void response to check if post successfully deleted
     }
 
@@ -61,16 +67,23 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public Iterable<Post> getPostByUserId(int userId) throws PostsNotFoundException {
+    public Iterable<Post> getPostByUserId(int userId) throws PostsNotFoundException, UserNotFoundException {
+        UserBean fetchedUser;
+
+        if (userClient.getUserById(userId) == null)
+            throw new UserNotFoundException("No user found with user ID: " + userId);
+
+        fetchedUser = userClient.getUserById(userId);
+
         Iterable<Post> foundUserPosts = postRepository.findAll();
+
         foundUserPosts.forEach((post) -> {
-            UserBean fetchedUser = userClient.getUserById((post.getUser_id()));
-            if(fetchedUser !=null) {
-                post.setUser(fetchedUser);
-            }
+            post.setUser(fetchedUser);
         });
+
         if (foundUserPosts.iterator().hasNext())
             return postRepository.findByUserId(userId);
+
         throw new PostsNotFoundException("No posts were found for user ID: " + userId);
     }
 
