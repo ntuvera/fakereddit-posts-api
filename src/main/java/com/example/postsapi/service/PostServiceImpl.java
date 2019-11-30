@@ -1,6 +1,7 @@
 package com.example.postsapi.service;
 
 import com.example.postsapi.bean.UserBean;
+import com.example.postsapi.exceptionhandler.PostNotFoundException;
 import com.example.postsapi.feign.CommentClient;
 import com.example.postsapi.feign.UserClient;
 import com.example.postsapi.model.Post;
@@ -66,12 +67,12 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public Optional<Post> findById(int postId) {
+    public Optional<Post> findById(int postId) throws PostNotFoundException {
         Optional<Post> foundPost = postRepository.findById(postId);
 
         if (foundPost.isPresent())
             return foundPost;
 
-        return null;
+        throw new PostNotFoundException("Unable to find post with ID: " + postId);
     }
 }

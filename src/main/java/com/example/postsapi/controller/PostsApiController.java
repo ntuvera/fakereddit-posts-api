@@ -1,6 +1,7 @@
 package com.example.postsapi.controller;
 
 import com.example.postsapi.bean.CommentBean;
+import com.example.postsapi.exceptionhandler.PostNotFoundException;
 import com.example.postsapi.feign.CommentClient;
 import com.example.postsapi.model.Post;
 import com.example.postsapi.service.PostServiceImpl;
@@ -55,7 +56,7 @@ public class PostsApiController {
 
     // Feign Client Get Post By Id
     @GetMapping("identify/{postId}")
-    public Optional<Post> findPostById(@PathVariable int postId) {
+    public Optional<Post> findPostById(@PathVariable int postId) throws PostNotFoundException {
         return postService.findById(postId);
     }
 }
