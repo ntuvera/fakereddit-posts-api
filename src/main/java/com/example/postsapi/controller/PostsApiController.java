@@ -86,7 +86,7 @@ public class PostsApiController {
     @GetMapping("/user/post")
     public Iterable<Post> getPostsByUserId(
             @ApiParam(
-                    value = "The ID of the user creating the post. This value is extracted from the Bearer token of the incoming request's Authorization header.",
+                    value = "The ID of the user to check for authored posts. This value is extracted from the Bearer token of the incoming request's Authorization header.",
                     required = true,
                     example = "1")
             @RequestHeader("userId") Integer userId) {
