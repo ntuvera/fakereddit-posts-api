@@ -25,6 +25,8 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.when;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -72,7 +74,24 @@ public class PostsApiControllerTest {
     }
 
     @Test
-    public void createPost_ReturnPost_Success() throws Exception {}
+    public void createPost_ReturnPost_Success() throws Exception {
+        RequestBuilder requestBuilder = MockMvcRequestBuilders
+                .post("/")
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", "")
+                .header("userId", "1")
+                .content("{\"title\":\"Test Post Title\",\"description\":\"Test Post Description\"}");
+
+        when(postService.createPost(any(), anyInt())).thenReturn(post);
+
+        MvcResult result = mockMvc
+                .perform(requestBuilder)
+                .andExpect(status().isOk())
+                .andExpect(content().json("{\"id\":1,\"title\":\"Test Post Title\",\"description\":\"Test Post Description\",\"user_id\":1,\"user\":{\"username\":\"testUser\"}}\n"))
+                .andReturn();
+
+        System.out.println(result.getResponse().getContentAsString());
+    }
 
     @Test
     public void getAllPosts_ReturnPostList_Success() throws Exception {}
