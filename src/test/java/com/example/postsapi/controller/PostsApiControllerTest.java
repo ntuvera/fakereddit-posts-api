@@ -2,6 +2,7 @@ package com.example.postsapi.controller;
 
 import com.example.postsapi.bean.CommentBean;
 import com.example.postsapi.bean.UserBean;
+import com.example.postsapi.feign.CommentClient;
 import com.example.postsapi.model.Post;
 import com.example.postsapi.service.PostServiceImpl;
 import org.junit.Before;
@@ -43,6 +44,9 @@ public class PostsApiControllerTest {
     @MockBean
     private PostServiceImpl postService;
 
+    @MockBean
+    private CommentClient commentClient;
+
     @InjectMocks
     private Post post;
 
@@ -54,6 +58,8 @@ public class PostsApiControllerTest {
 
     private List<Post> postList;
 
+    private List<CommentBean> commentList;
+
     @Before
     public void init() {
         user.setUsername("testUser");
@@ -62,6 +68,9 @@ public class PostsApiControllerTest {
         comment.setText("Test Comment Text");
         comment.setPostId(1);
         comment.setUserId(1);
+
+        commentList = new ArrayList<>();
+        commentList.add(comment);
 
         post.setId(1);
         post.setTitle("Test Post Title");
@@ -132,8 +141,21 @@ public class PostsApiControllerTest {
     public void deletePost_ReturnStringMsg_Success() throws Exception {}
 
     @Test
-    public void getCommentsByPostId_ReturnsCommentsList_Success() {}
+    public void getCommentsByPostId_ReturnsCommentsList_Success() throws Exception {
+        RequestBuilder requestBuilder = MockMvcRequestBuilders
+                .get("/{postId}/comment", 1);
+
+        when(commentClient.getCommentsByPostId(anyInt())).thenReturn(commentList);
+
+        MvcResult result = mockMvc
+                .perform(requestBuilder)
+                .andExpect(status().isOk())
+//                .andExpect(content().json("[{\"id\":1,\"title\":\"Test Post Title\",\"description\":\"Test Post Description\",\"user_id\":1,\"user\":{\"username\":\"testUser\"}}]"))
+                .andReturn();
+
+        System.out.println(result.getResponse().getContentAsString());
+    }
 
     @Test
-    public void findPostById_ReturnsPost_Success() {}
+    public void findPostById_ReturnsPost_Success() throws Exception {}
 }
