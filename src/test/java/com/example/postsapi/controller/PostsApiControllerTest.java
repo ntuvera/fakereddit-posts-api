@@ -94,10 +94,39 @@ public class PostsApiControllerTest {
     }
 
     @Test
-    public void getAllPosts_ReturnPostList_Success() throws Exception {}
+    public void getAllPosts_ReturnPostList_Success() throws Exception {
+        RequestBuilder requestBuilder = MockMvcRequestBuilders
+                .get("/list");
+
+        when(postService.listPosts()).thenReturn(postList);
+
+        MvcResult result = mockMvc
+                .perform(requestBuilder)
+                .andExpect(status().isOk())
+                .andExpect(content().json("[{\"id\":1,\"title\":\"Test Post Title\",\"description\":\"Test Post Description\",\"user_id\":1,\"user\":{\"username\":\"testUser\"}}]"))
+                .andReturn();
+
+        System.out.println(result.getResponse().getContentAsString());
+    }
 
     @Test
-    public void getPostsByUserId_ReturnPostList_Success() throws Exception {}
+    public void getPostsByUserId_ReturnPostList_Success() throws Exception {
+        RequestBuilder requestBuilder = MockMvcRequestBuilders
+                .get("/user/post")
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", "")
+                .header("userId", "1");
+
+        when(postService.getPostByUserId(anyInt())).thenReturn(postList);
+
+        MvcResult result = mockMvc
+                .perform(requestBuilder)
+                .andExpect(status().isOk())
+                .andExpect(content().json("[{\"id\":1,\"title\":\"Test Post Title\",\"description\":\"Test Post Description\",\"user_id\":1,\"user\":{\"username\":\"testUser\"}}]"))
+                .andReturn();
+
+        System.out.println(result.getResponse().getContentAsString());
+    }
 
     @Test
     public void deletePost_ReturnStringMsg_Success() throws Exception {}
