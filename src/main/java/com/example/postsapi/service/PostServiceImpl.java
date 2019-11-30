@@ -3,6 +3,7 @@ package com.example.postsapi.service;
 import com.example.postsapi.bean.UserBean;
 import com.example.postsapi.exceptionhandler.NoPostTitleException;
 import com.example.postsapi.exceptionhandler.PostNotFoundException;
+import com.example.postsapi.exceptionhandler.PostsNotFoundException;
 import com.example.postsapi.feign.CommentClient;
 import com.example.postsapi.feign.UserClient;
 import com.example.postsapi.model.Post;
@@ -43,7 +44,7 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public Iterable<Post> listPosts() {
+    public Iterable<Post> listPosts() throws PostsNotFoundException {
         Iterable<Post> allPosts = new ArrayList<Post>();
         allPosts = postRepository.findAll();
         allPosts.forEach((post) -> {
@@ -54,12 +55,13 @@ public class PostServiceImpl implements PostService {
                 post.setUser(new UserBean("User has been Deleted"));
             }
         });
-
-        return allPosts;
+        if (allPosts.iterator().hasNext())
+            return allPosts;
+        throw new PostsNotFoundException("No posts were found");
     }
 
     @Override
-    public Iterable<Post> getPostByUserId(int userId) {
+    public Iterable<Post> getPostByUserId(int userId) throws PostsNotFoundException {
         Iterable<Post> foundUserPosts = postRepository.findAll();
         foundUserPosts.forEach((post) -> {
             UserBean fetchedUser = userClient.getUserById((post.getUser_id()));
@@ -67,7 +69,9 @@ public class PostServiceImpl implements PostService {
                 post.setUser(fetchedUser);
             }
         });
-        return postRepository.findByUserId(userId);
+        if (foundUserPosts.iterator().hasNext())
+            return postRepository.findByUserId(userId);
+        throw new PostsNotFoundException("No posts were found for user ID: " + userId);
     }
 
     @Override
