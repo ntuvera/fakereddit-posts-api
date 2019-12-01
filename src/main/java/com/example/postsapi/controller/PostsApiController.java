@@ -51,7 +51,6 @@ public class PostsApiController {
                     example = "1",
                     required = true)
             @RequestHeader("userId") int userId) throws NoPostTitleException {
-        if(newPost.getTitle().trim().length() > 0) {
             return postService.createPost(newPost, userId);
     }
 
@@ -112,7 +111,7 @@ public class PostsApiController {
                         value = "The ID of the post to delete. This value is extracted from the {postId} path variable. This value is required.",
                         required = true,
                         example = "1")
-                @PathVariable int postId) {
+                @PathVariable int postId) throws PostNotFoundException {
             postService.deletePost(postId);
             return "Post " + postId + " Deleted";
         }
