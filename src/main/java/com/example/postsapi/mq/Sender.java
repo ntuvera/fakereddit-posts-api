@@ -13,12 +13,6 @@ public class Sender {
     @Autowired
     Queue queue;
 
-    public void send(String message) {
-        System.out.println("Sending message...");
-        rabbitTemplate.convertAndSend(queue.getName(), message);
-        System.out.println("Message sent: " + message + " on q: " + queue.getName());
-    }
-
     public void sendPostId(String postId) {
         // TODO: how to specify consumer?
         rabbitTemplate.convertAndSend(queue.getName(), postId);
