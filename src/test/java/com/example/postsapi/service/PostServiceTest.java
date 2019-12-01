@@ -16,6 +16,7 @@ import org.mockito.junit.MockitoRule;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -106,8 +107,20 @@ public class PostServiceTest {
     }
 
     @Test
-    public void findById_ReturnsPost_Success() throws Exception {}
+    public void findById_ReturnsPost_Success() throws Exception {
+        when(postRepository.findById(anyInt())).thenReturn(java.util.Optional.of(post));
+
+        Optional<Post> foundPost = postService.findById(1);
+
+        assertNotNull(foundPost);
+        assertEquals(post.getTitle(), foundPost.get().getTitle());
+    }
 
     @Test
-    public void deletePost_ReturnsStringMsg_Success() throws Exception {}
+    public void deletePost_ReturnsStringMsg_Success() throws Exception {
+        String deletedMsg = postService.deletePost(1);
+
+        assertNotNull(deletedMsg);
+        assertEquals("post: 1 successfully deleted", deletedMsg);
+    }
 }
