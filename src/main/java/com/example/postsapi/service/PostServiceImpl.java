@@ -8,6 +8,7 @@ import com.example.postsapi.exceptionhandler.UserNotFoundException;
 import com.example.postsapi.feign.CommentClient;
 import com.example.postsapi.feign.UserClient;
 import com.example.postsapi.model.Post;
+import com.example.postsapi.mq.Sender;
 import com.example.postsapi.repository.PostRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -26,6 +27,9 @@ public class PostServiceImpl implements PostService {
     @Autowired
     CommentClient commentClient;
 
+    @Autowired
+    Sender sender;
+
     @Override
     public Post createPost(Post newPost, int userId) throws NoPostTitleException {
         if(newPost.getTitle().trim().length() > 0) {
@@ -42,7 +46,7 @@ public class PostServiceImpl implements PostService {
             throw new PostNotFoundException("The post cannot be deleted. No post of post Id: " + postId + " exists.");
 
         postRepository.deleteById(postId);
-        commentClient.deleteCommmentsByPostId(postId);
+        sender.sendPostId(String.valueOf(postId));
         return "post: " + postId + " successfully deleted";
        // TODO: how to sort out void response to check if post successfully deleted
     }
