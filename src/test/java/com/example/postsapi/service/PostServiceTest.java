@@ -89,6 +89,7 @@ public class PostServiceTest {
     @Test
     public void listPosts_ReturnsPostList_Success() throws Exception {
         when(postRepository.findAll()).thenReturn(postList);
+        when(userClient.getUserById(anyInt())).thenReturn(user);
 
         Iterable<Post> foundPosts = postService.listPosts();
 
@@ -99,6 +100,7 @@ public class PostServiceTest {
     @Test
     public void getPostByUserId_ReturnsPostList_Success() throws Exception {
         when(postRepository.findByUserId(anyInt())).thenReturn(postList);
+        when(userClient.getUserById(anyInt())).thenReturn(user);
 
         Iterable<Post> foundPosts = postService.getPostByUserId(1);
 
