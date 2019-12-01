@@ -1,6 +1,10 @@
 package com.example.postsapi.controller;
 
 import com.example.postsapi.bean.CommentBean;
+import com.example.postsapi.exceptionhandler.NoPostTitleException;
+import com.example.postsapi.exceptionhandler.PostNotFoundException;
+import com.example.postsapi.exceptionhandler.PostsNotFoundException;
+import com.example.postsapi.exceptionhandler.UserNotFoundException;
 import com.example.postsapi.feign.CommentClient;
 import com.example.postsapi.model.Post;
 import com.example.postsapi.service.PostServiceImpl;
@@ -20,7 +24,6 @@ public class PostsApiController {
     @Autowired
     CommentClient commentClient;
 
-    @PostMapping("/")
     @ApiOperation(
             value = "Create a post",
             notes = "Allows a user to create a post. Only logged in users can create posts")
@@ -39,6 +42,7 @@ public class PostsApiController {
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "OK"),
             @ApiResponse(code = 404, message = "The resource you were trying to reach was not found")})
+    @PostMapping("/")
     public Post createPost(
             @RequestBody Post newPost,
             @ApiParam(
@@ -46,11 +50,9 @@ public class PostsApiController {
                     value = "The ID of the user creating the post. This value is extracted from the Bearer token of the incoming request's Authorization header.",
                     example = "1",
                     required = true)
-            @RequestHeader("userId") int userId) {
-        if(newPost.getTitle().trim().length() >0) {
+            @RequestHeader("userId") int userId) throws NoPostTitleException {
+        if(newPost.getTitle().trim().length() > 0) {
             return postService.createPost(newPost, userId);
-        }
-        return null;
     }
 
     @ApiOperation(
@@ -64,7 +66,7 @@ public class PostsApiController {
                     responseContainer = "List"),
             @ApiResponse(code = 404, message = "The resource you were trying to reach was not found")})
     @GetMapping("/list")
-    public Iterable<Post> getAllPosts() {
+    public Iterable<Post> getAllPosts() throws PostsNotFoundException {
         return postService.listPosts();
     }
 
@@ -89,7 +91,7 @@ public class PostsApiController {
                     value = "The ID of the user to check for authored posts. This value is extracted from the Bearer token of the incoming request's Authorization header.",
                     required = true,
                     example = "1")
-            @RequestHeader("userId") Integer userId) {
+            @RequestHeader("userId") Integer userId) throws PostsNotFoundException, UserNotFoundException  {
         return postService.getPostByUserId(userId);
     }
 
@@ -152,7 +154,7 @@ public class PostsApiController {
                     value = "The ID of the post to find. This value is extracted from the {postId} path variable. This value is required.",
                     required = true,
                     example = "1")
-            @PathVariable int postId) {
+            @PathVariable int postId) throws PostNotFoundException {
         return postService.findById(postId);
     }
 }
