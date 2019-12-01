@@ -8,8 +8,7 @@ import com.example.postsapi.exceptionhandler.UserNotFoundException;
 import com.example.postsapi.feign.CommentClient;
 import com.example.postsapi.model.Post;
 import com.example.postsapi.service.PostServiceImpl;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,38 +24,137 @@ public class PostsApiController {
     @Autowired
     CommentClient commentClient;
 
+    @ApiOperation(
+            value = "Create a post",
+            notes = "Allows a user to create a post. Only logged in users can create posts")
+    @ApiImplicitParams({
+            @ApiImplicitParam(
+                    name = "newPost",
+                    value = "The body of the post that the user wants to create. Expects JSON as format. The title of the post is required while the description may be left blank",
+                    example =
+                            "{\n" +
+                            "  \"title\": \"Hi, I'm a sample post title\",\n" +
+                            "  \"description\": \"Hi, I'm a sample post description. Leave me blank if you'd like.\"\n" +
+                            "}",
+                    required = true,
+                    dataType = "string",
+                    paramType = "body")})
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK"),
+            @ApiResponse(code = 404, message = "The resource you were trying to reach was not found")})
     @PostMapping("/")
-    @ApiOperation(value = "AHHHHHHHHHHHHH")
-    public Post createPost(@RequestBody Post newPost, @RequestHeader("userId") int userId) throws NoPostTitleException {
+    public Post createPost(
+            @RequestBody Post newPost,
+            @ApiParam(
+                    name = "userId",
+                    value = "The ID of the user creating the post. This value is extracted from the Bearer token of the incoming request's Authorization header.",
+                    example = "1",
+                    required = true)
+            @RequestHeader("userId") int userId) throws NoPostTitleException {
+        if(newPost.getTitle().trim().length() > 0) {
             return postService.createPost(newPost, userId);
     }
 
+    @ApiOperation(
+            value = "Get all posts",
+            notes = "Allows a user to see a list of all posts found in the database. Users do not need to be logged in to access all posts")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    code = 200,
+                    message = "OK",
+                    response = Post.class,
+                    responseContainer = "List"),
+            @ApiResponse(code = 404, message = "The resource you were trying to reach was not found")})
     @GetMapping("/list")
     public Iterable<Post> getAllPosts() throws PostsNotFoundException {
         return postService.listPosts();
     }
 
+    @ApiOperation(
+            value = "Get posts by user ID",
+            notes = "Allows a user to see all posts created by a given user's ID")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    code = 200,
+                    message = "OK",
+                    response = Post.class,
+                    responseContainer = "List",
+                    examples = @Example(
+                        value = {
+                                @ExampleProperty(
+                                        mediaType = "Example JSON",
+                                        value = "Sample JSON")})),
+            @ApiResponse(code = 404, message = "The resource you were trying to reach was not found")})
     @GetMapping("/user/post")
-    public Iterable<Post> getPostsByUserId(@RequestHeader("userId") Integer userId) throws PostsNotFoundException, UserNotFoundException {
+    public Iterable<Post> getPostsByUserId(
+            @ApiParam(
+                    value = "The ID of the user to check for authored posts. This value is extracted from the Bearer token of the incoming request's Authorization header.",
+                    required = true,
+                    example = "1")
+            @RequestHeader("userId") Integer userId) throws PostsNotFoundException, UserNotFoundException  {
         return postService.getPostByUserId(userId);
     }
-    // TODO: reactivate when we find a way to go around swagger-ui.html
-//    @DeleteMapping("/{postId}")
-//    @RequestMapping(value = "/{postId}", method = RequestMethod.DELETE)
-//    public String deletePost(@PathVariable int postId) {
-//        postService.deletePost(postId);
-//        return "Post " + postId + " Deleted";
-//    }
 
-    // Feign Client Comment routing
+    // TODO: reactivate when we find a way to go around swagger-ui.html
+    //    @ApiOperation(
+    //            value = "Delete post by post ID",
+    //            notes = "Allows a user to delete a post using a a post's ID")
+    //    @ApiResponses(value = {
+    //            @ApiResponse(
+    //                    code = 200,
+    //                    message = "OK",
+    //                    response = String.class),
+    //            @ApiResponse(code = 404, message = "The resource you were trying to reach was not found")})
+    //    @DeleteMapping("/{postId}")
+    //    @RequestMapping(value = "/{postId}", method = RequestMethod.DELETE)
+    //    public String deletePost(
+    //            @ApiParam(
+    //                    value = "The ID of the post to delete. This value is extracted from the {postId} path variable. This value is required.",
+    //                    required = true,
+    //                    example = "1")
+    //            @PathVariable int postId) {
+    //        postService.deletePost(postId);
+    //        return "Post " + postId + " Deleted";
+    //    }
+
+    @ApiOperation(
+            value = "Get comments by post ID",
+            notes = "Allows a user to see all comments from a given post's ID")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    code = 200,
+                    message = "OK",
+                    response = CommentBean.class,
+                    responseContainer = "List"),
+            @ApiResponse(code = 404, message = "The resource you were trying to reach was not found")})
     @GetMapping("/{postId}/comment")
-    public List<CommentBean> addCommentToPost(@PathVariable int postId, @RequestHeader("userId") Integer userId) {
+    public List<CommentBean> getCommentsByPostId(
+            @ApiParam(
+                    value = "The ID of the post to query for comments. This value is extracted from the {postId} path variable. This value is required.",
+                    required = true,
+                    example = "1")
+            @PathVariable int postId,
+            // TODO: Is userId parameter needed?
+            @RequestHeader("userId") Integer userId) {
         return commentClient.getCommentsByPostId(postId);
     }
 
-    // Feign Client Get Post By Id
+    @ApiOperation(
+            value = "Find a post by post ID",
+            notes = "A feign endpoint that allows the client to find a post by post ID if it exists")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    code = 200,
+                    message = "OK",
+                    response = Post.class),
+            @ApiResponse(code = 404, message = "The resource you were trying to reach was not found")})
     @GetMapping("identify/{postId}")
-    public Optional<Post> findPostById(@PathVariable int postId) throws PostNotFoundException {
+    public Optional<Post> findPostById(
+            @ApiParam(
+                    value = "The ID of the post to find. This value is extracted from the {postId} path variable. This value is required.",
+                    required = true,
+                    example = "1")
+            @PathVariable int postId) throws PostNotFoundException {
         return postService.findById(postId);
     }
 }
