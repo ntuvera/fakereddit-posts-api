@@ -38,11 +38,9 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public String deletePost(int postId) throws PostNotFoundException {
-        try {
-            postRepository.findById(postId);
-        } catch(Exception e) {
+        if (!postRepository.findById(postId).isPresent())
             throw new PostNotFoundException("The post cannot be deleted. No post of post Id: " + postId + " exists.");
-        }
+
         postRepository.deleteById(postId);
         commentClient.deleteCommmentsByPostId(postId);
         return "post: " + postId + " successfully deleted";
@@ -81,10 +79,12 @@ public class PostServiceImpl implements PostService {
             post.setUser(fetchedUser);
         });
 
-        if (foundUserPosts.iterator().hasNext())
+        if (foundUserPosts.iterator().hasNext()) {
             return postRepository.findByUserId(userId);
+        } else {
+            throw new PostsNotFoundException("No posts were found for user ID: " + userId);
+        }
 
-        throw new PostsNotFoundException("No posts were found for user ID: " + userId);
     }
 
     @Override

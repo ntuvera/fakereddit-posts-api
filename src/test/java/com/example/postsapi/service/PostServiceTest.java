@@ -2,6 +2,10 @@ package com.example.postsapi.service;
 
 import com.example.postsapi.bean.CommentBean;
 import com.example.postsapi.bean.UserBean;
+import com.example.postsapi.exceptionhandler.NoPostTitleException;
+import com.example.postsapi.exceptionhandler.PostNotFoundException;
+import com.example.postsapi.exceptionhandler.PostsNotFoundException;
+import com.example.postsapi.exceptionhandler.UserNotFoundException;
 import com.example.postsapi.feign.CommentClient;
 import com.example.postsapi.feign.UserClient;
 import com.example.postsapi.model.Post;
@@ -33,6 +37,9 @@ public class PostServiceTest {
 
     @InjectMocks
     private Post post;
+
+    @InjectMocks
+    private Post badPost;
 
     @Mock
     private PostRepository postRepository;
@@ -77,7 +84,7 @@ public class PostServiceTest {
     }
 
     @Test
-    public void createPost_ReturnsPost_Success() throws Exception {
+    public void createPost_ReturnsPost_Success() throws NoPostTitleException {
         when(postRepository.save(any())).thenReturn(post);
 
         Post newPost = postService.createPost(post, 1);
@@ -86,8 +93,14 @@ public class PostServiceTest {
         assertEquals(post.getTitle(), newPost.getTitle());
     }
 
+    @Test(expected = NoPostTitleException.class)
+    public void createPost_ThrewNoPostTitleException_Failure() throws NoPostTitleException {
+        badPost.setTitle("");
+        postService.createPost(badPost, 1);
+    }
+
     @Test
-    public void listPosts_ReturnsPostList_Success() throws Exception {
+    public void listPosts_ReturnsPostList_Success() throws PostsNotFoundException {
         when(postRepository.findAll()).thenReturn(postList);
         when(userClient.getUserById(anyInt())).thenReturn(user);
 
@@ -97,10 +110,16 @@ public class PostServiceTest {
         assertEquals(postList.get(0).getUser().getUsername(), foundPosts.iterator().next().getUser().getUsername());
     }
 
+    @Test(expected = PostsNotFoundException.class)
+    public void listPosts_ThrewNoPostsFoundException_Failure() throws PostsNotFoundException {
+        postService.listPosts();
+    }
+
     @Test
-    public void getPostByUserId_ReturnsPostList_Success() throws Exception {
-        when(postRepository.findByUserId(anyInt())).thenReturn(postList);
+    public void getPostByUserId_ReturnsPostList_Success() throws PostsNotFoundException, UserNotFoundException {
         when(userClient.getUserById(anyInt())).thenReturn(user);
+        when(postRepository.findAll()).thenReturn(postList);
+        when(postRepository.findByUserId(anyInt())).thenReturn(postList);
 
         Iterable<Post> foundPosts = postService.getPostByUserId(1);
 
@@ -108,8 +127,20 @@ public class PostServiceTest {
         assertEquals(postList.get(0).getUser().getUsername(), foundPosts.iterator().next().getUser().getUsername());
     }
 
+    @Test(expected = PostsNotFoundException.class)
+    public void getPostByUserId_ThrewPostsNotFoundException_Failure() throws PostsNotFoundException, UserNotFoundException {
+        when(userClient.getUserById(anyInt())).thenReturn(user);
+
+        postService.getPostByUserId(1);
+    }
+
+    @Test(expected = UserNotFoundException.class)
+    public void getPostByUserId_ThrewUserNotFoundException_Failure() throws PostsNotFoundException, UserNotFoundException {
+        postService.getPostByUserId(0);
+    }
+
     @Test
-    public void findById_ReturnsPost_Success() throws Exception {
+    public void findById_ReturnsPost_Success() throws PostNotFoundException {
         when(postRepository.findById(anyInt())).thenReturn(java.util.Optional.of(post));
 
         Optional<Post> foundPost = postService.findById(1);
@@ -118,11 +149,23 @@ public class PostServiceTest {
         assertEquals(post.getTitle(), foundPost.get().getTitle());
     }
 
+    @Test(expected = PostNotFoundException.class)
+    public void findById_ThrewPostNotFoundException_Failure() throws PostNotFoundException {
+        postService.findById(0);
+    }
+
     @Test
-    public void deletePost_ReturnsStringMsg_Success() throws Exception {
+    public void deletePost_ReturnsStringMsg_Success() throws PostNotFoundException {
+        when(postRepository.findById(anyInt())).thenReturn(Optional.of(post));
+
         String deletedMsg = postService.deletePost(1);
 
         assertNotNull(deletedMsg);
         assertEquals("post: 1 successfully deleted", deletedMsg);
+    }
+
+    @Test(expected = PostNotFoundException.class)
+    public void deletePost_ThrewPostNotFoundException_Failure() throws PostNotFoundException {
+        postService.deletePost(0);
     }
 }
