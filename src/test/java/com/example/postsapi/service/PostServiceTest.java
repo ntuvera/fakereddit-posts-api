@@ -19,8 +19,7 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 
 public class PostServiceTest {
@@ -97,7 +96,14 @@ public class PostServiceTest {
     }
 
     @Test
-    public void getPostByUserId_ReturnsPostList_Success() throws Exception {}
+    public void getPostByUserId_ReturnsPostList_Success() throws Exception {
+        when(postRepository.findByUserId(anyInt())).thenReturn(postList);
+
+        Iterable<Post> foundPosts = postService.getPostByUserId(1);
+
+        assertNotNull(foundPosts);
+        assertEquals(postList.get(0).getUser().getUsername(), foundPosts.iterator().next().getUser().getUsername());
+    }
 
     @Test
     public void findById_ReturnsPost_Success() throws Exception {}
