@@ -96,26 +96,26 @@ public class PostsApiController {
     }
 
     // TODO: reactivate when we find a way to go around swagger-ui.html
-    //    @ApiOperation(
-    //            value = "Delete post by post ID",
-    //            notes = "Allows a user to delete a post using a a post's ID")
-    //    @ApiResponses(value = {
-    //            @ApiResponse(
-    //                    code = 200,
-    //                    message = "OK",
-    //                    response = String.class),
-    //            @ApiResponse(code = 404, message = "The resource you were trying to reach was not found")})
-    //    @DeleteMapping("/{postId}")
-    //    @RequestMapping(value = "/{postId}", method = RequestMethod.DELETE)
-    //    public String deletePost(
-    //            @ApiParam(
-    //                    value = "The ID of the post to delete. This value is extracted from the {postId} path variable. This value is required.",
-    //                    required = true,
-    //                    example = "1")
-    //            @PathVariable int postId) {
-    //        postService.deletePost(postId);
-    //        return "Post " + postId + " Deleted";
-    //    }
+        @ApiOperation(
+                value = "Delete post by post ID",
+                notes = "Allows a user to delete a post using a a post's ID")
+        @ApiResponses(value = {
+                @ApiResponse(
+                        code = 200,
+                        message = "OK",
+                        response = String.class),
+                @ApiResponse(code = 404, message = "The resource you were trying to reach was not found")})
+        @DeleteMapping("/{postId}")
+        @RequestMapping(value = "/{postId}", method = RequestMethod.DELETE)
+        public String deletePost(
+                @ApiParam(
+                        value = "The ID of the post to delete. This value is extracted from the {postId} path variable. This value is required.",
+                        required = true,
+                        example = "1")
+                @PathVariable int postId) {
+            postService.deletePost(postId);
+            return "Post " + postId + " Deleted";
+        }
 
     @ApiOperation(
             value = "Get comments by post ID",
