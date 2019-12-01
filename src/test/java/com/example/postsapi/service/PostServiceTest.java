@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
@@ -76,17 +77,31 @@ public class PostServiceTest {
     }
 
     @Test
-    public void createPost_ReturnsPost_Success() throws Exception {}
+    public void createPost_ReturnsPost_Success() throws Exception {
+        when(postRepository.save(any())).thenReturn(post);
+
+        Post newPost = postService.createPost(post, 1);
+
+        assertNotNull(newPost);
+        assertEquals(post.getTitle(), newPost.getTitle());
+    }
 
     @Test
-    public void deletePost_ReturnsStringMsg_Success() throws Exception {}
+    public void listPosts_ReturnsPostList_Success() throws Exception {
+        when(postRepository.findAll()).thenReturn(postList);
 
-    @Test
-    public void listPosts_ReturnsPostList_Success() throws Exception {}
+        Iterable<Post> foundPosts = postService.listPosts();
+
+        assertNotNull(foundPosts);
+        assertEquals(postList.get(0).getUser().getUsername(), foundPosts.iterator().next().getUser().getUsername());
+    }
 
     @Test
     public void getPostByUserId_ReturnsPostList_Success() throws Exception {}
 
     @Test
     public void findById_ReturnsPost_Success() throws Exception {}
+
+    @Test
+    public void deletePost_ReturnsStringMsg_Success() throws Exception {}
 }
