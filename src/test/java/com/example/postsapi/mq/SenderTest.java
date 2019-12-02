@@ -47,4 +47,10 @@ public class SenderTest {
         assertEquals("PostId sent: 1 on q: queue1\n", outContent.toString());
     }
 
+    @Test
+    public void sendPostId_Failure() {
+        sender.sendPostId("-1");
+
+    }
+
 }
