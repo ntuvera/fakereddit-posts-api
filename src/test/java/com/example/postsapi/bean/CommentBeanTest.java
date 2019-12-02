@@ -15,7 +15,7 @@ public class CommentBeanTest {
     private CommentBean comment;
 
     @Before
-    public void initComment() {
+    public void init() {
         comment.setId(1);
         comment.setText("Test Comment Text");
         comment.setUserId(1);
@@ -23,40 +23,40 @@ public class CommentBeanTest {
     }
 
     @Test
-    public void getText() {
+    public void getText_Text_Success() {
         assertEquals("Test Comment Text", comment.getText());
     }
 
     @Test
-    public void setText() {
+    public void setText_NewText_Success() {
         comment.setText("New Test Comment Text");
         assertEquals("New Test Comment Text", comment.getText());
     }
 
     @Test
-    public void setId() {
+    public void setId_NewId_Success() {
         comment.setId(2);
         assertEquals(2, comment.getId());
     }
 
     @Test
-    public void getPostId() {
+    public void getPostId_PostId_Success() {
         assertEquals(1, comment.getPostId());
     }
 
     @Test
-    public void setPostId() {
+    public void setPostId_NewPostId_Success() {
         comment.setPostId(2);
         assertEquals(2, comment.getPostId());
     }
 
     @Test
-    public void getUserId() {
+    public void getUserId_UserId_Success() {
         assertEquals(1, comment.getUserId());
     }
 
     @Test
-    public void setUserId() {
+    public void setUserId_NewUserId_Success() {
         comment.setUserId(2);
         assertEquals(2, comment.getUserId());
     }
