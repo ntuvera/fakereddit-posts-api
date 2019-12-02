@@ -9,6 +9,7 @@ import com.example.postsapi.exceptionhandler.UserNotFoundException;
 import com.example.postsapi.feign.CommentClient;
 import com.example.postsapi.feign.UserClient;
 import com.example.postsapi.model.Post;
+import com.example.postsapi.mq.Sender;
 import com.example.postsapi.repository.PostRepository;
 import org.junit.Before;
 import org.junit.Rule;
@@ -25,6 +26,7 @@ import java.util.Optional;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
 public class PostServiceTest {
@@ -55,6 +57,9 @@ public class PostServiceTest {
 
     @Mock
     private CommentClient commentClient;
+
+    @Mock
+    private Sender sender;
 
     private List<Post> postList;
 
@@ -157,6 +162,7 @@ public class PostServiceTest {
     @Test
     public void deletePost_ReturnsStringMsg_Success() throws PostNotFoundException {
         when(postRepository.findById(anyInt())).thenReturn(Optional.of(post));
+        doNothing().when(sender).sendPostId(anyString());
 
         String deletedMsg = postService.deletePost(1);
 
