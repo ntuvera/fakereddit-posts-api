@@ -12,6 +12,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SenderTest {
@@ -41,6 +43,7 @@ public class SenderTest {
 
         System.out.println("PostId sent: 1 on q: queue1");
 
+        verify(sender, times(1)).sendPostId("1");
         assertEquals("PostId sent: 1 on q: queue1\n", outContent.toString());
     }
 
