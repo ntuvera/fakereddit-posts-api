@@ -60,4 +60,14 @@ public class CommentBeanTest {
         comment.setUserId(2);
         assertEquals(2, comment.getUserId());
     }
+
+    @Test
+    public void CommentBean_NewComment_Success() {
+        CommentBean newComment = new CommentBean(2, "Test Comment Text", 1, 1);
+
+        assertEquals(2, newComment.getId());
+        assertEquals("Test Comment Text", newComment.getText());
+        assertEquals(1, newComment.getPostId());
+        assertEquals(1, newComment.getUserId());
+    }
 }
