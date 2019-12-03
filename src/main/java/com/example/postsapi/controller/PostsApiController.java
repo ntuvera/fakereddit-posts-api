@@ -74,12 +74,8 @@ public class PostsApiController {
                     code = 200,
                     message = "OK",
                     response = Post.class,
-                    responseContainer = "List",
-                    examples = @Example(
-                        value = {
-                                @ExampleProperty(
-                                        mediaType = "Example JSON",
-                                        value = "Sample JSON")})),
+                    responseContainer = "List"
+                    ),
             @ApiResponse(code = 404, message = "The resource you were trying to reach was not found")})
     @GetMapping("/user/post")
     public Iterable<Post> getPostsByUserId(
