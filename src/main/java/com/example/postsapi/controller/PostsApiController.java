@@ -105,7 +105,6 @@ public class PostsApiController {
                         response = String.class),
                 @ApiResponse(code = 404, message = "The resource you were trying to reach was not found")})
         @DeleteMapping("/{postId}")
-        @RequestMapping(value = "/{postId}", method = RequestMethod.DELETE)
         public String deletePost(
                 @ApiParam(
                         value = "The ID of the post to delete. This value is extracted from the {postId} path variable. This value is required.",
