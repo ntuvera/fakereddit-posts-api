@@ -2,10 +2,7 @@ package com.example.postsapi.service;
 
 import com.example.postsapi.bean.CommentBean;
 import com.example.postsapi.bean.UserBean;
-import com.example.postsapi.exceptionhandler.NoPostTitleException;
-import com.example.postsapi.exceptionhandler.PostNotFoundException;
-import com.example.postsapi.exceptionhandler.PostsNotFoundException;
-import com.example.postsapi.exceptionhandler.UserNotFoundException;
+import com.example.postsapi.exceptionhandler.*;
 import com.example.postsapi.feign.CommentClient;
 import com.example.postsapi.feign.UserClient;
 import com.example.postsapi.model.Post;
@@ -160,18 +157,18 @@ public class PostServiceTest {
     }
 
     @Test
-    public void deletePost_ReturnsStringMsg_Success() throws PostNotFoundException {
+    public void deletePost_ReturnsStringMsg_Success() throws PostNotFoundException, UnauthorizedActionException {
         when(postRepository.findById(anyInt())).thenReturn(Optional.of(post));
         doNothing().when(sender).sendPostId(anyString());
 
-        String deletedMsg = postService.deletePost(1);
+        String deletedMsg = postService.deletePost(1, 1);
 
         assertNotNull(deletedMsg);
         assertEquals("post: 1 successfully deleted", deletedMsg);
     }
 
     @Test(expected = PostNotFoundException.class)
-    public void deletePost_ThrewPostNotFoundException_Failure() throws PostNotFoundException {
-        postService.deletePost(0);
+    public void deletePost_ThrewPostNotFoundException_Failure() throws PostNotFoundException, UnauthorizedActionException {
+        postService.deletePost(0, 0);
     }
 }
