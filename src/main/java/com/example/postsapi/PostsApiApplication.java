@@ -44,6 +44,6 @@ public class PostsApiApplication {
 				.select()
 				.apis(RequestHandlerSelectors.basePackage("com.example.postsapi.controller"))
 				.paths(PathSelectors.any())
-				.build().apiInfo(new ApiInfo("Account Service Api Documentation", "Documentation automatically generated", model.getParent().getVersion(), null, (String) null, null, null));
+				.build().apiInfo(new ApiInfo("Posts Service API Documentation", "Documentation automatically generated", model.getParent().getVersion(), null, (String) null, null, null));
 	}
 }
