@@ -140,7 +140,7 @@ public class PostsApiControllerTest {
         RequestBuilder requestBuilder = MockMvcRequestBuilders
                 .delete("/{postId}", 1);
 
-        when(postService.deletePost(anyInt())).thenReturn("Post 1 Deleted");
+        when(postService.deletePost(anyInt(), anyInt())).thenReturn("Post 1 Deleted");
 
         MvcResult result = mockMvc
                 .perform(requestBuilder)

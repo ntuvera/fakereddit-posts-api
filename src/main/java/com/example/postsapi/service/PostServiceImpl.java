@@ -40,17 +40,17 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public String deletePost(int postId, int userId) throws PostNotFoundException, UnauthorizedActionException {
+        Optional<Post> targetPost = postRepository.findById(postId);
+
         if (!postRepository.findById(postId).isPresent())
             throw new PostNotFoundException("The post cannot be deleted. No post of post Id: " + postId + " exists.");
 
-        Optional<Post> targetPost = postRepository.findById(postId);
-        if (targetPost.isPresent() && targetPost.get().getUser().getId() == userId) {
-            postRepository.deleteById(postId);
-            sender.sendPostId(String.valueOf(postId));
-            return "post: " + postId + " successfully deleted";
-        }
+        if (targetPost.isPresent() && (targetPost.get().getUser_id() != userId))
+            throw new UnauthorizedActionException(HttpStatus.UNAUTHORIZED, "You can only delete your own posts");
 
-        throw new UnauthorizedActionException(HttpStatus.UNAUTHORIZED, "You can only delete your own posts");
+        postRepository.deleteById(postId);
+        sender.sendPostId(String.valueOf(postId));
+        return "post: " + postId + " successfully deleted";
     }
 
     @Override
