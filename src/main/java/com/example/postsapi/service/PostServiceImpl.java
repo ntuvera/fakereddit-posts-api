@@ -1,16 +1,14 @@
 package com.example.postsapi.service;
 
 import com.example.postsapi.bean.UserBean;
-import com.example.postsapi.exceptionhandler.NoPostTitleException;
-import com.example.postsapi.exceptionhandler.PostNotFoundException;
-import com.example.postsapi.exceptionhandler.PostsNotFoundException;
-import com.example.postsapi.exceptionhandler.UserNotFoundException;
+import com.example.postsapi.exceptionhandler.*;
 import com.example.postsapi.feign.CommentClient;
 import com.example.postsapi.feign.UserClient;
 import com.example.postsapi.model.Post;
 import com.example.postsapi.mq.Sender;
 import com.example.postsapi.repository.PostRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -37,18 +35,22 @@ public class PostServiceImpl implements PostService {
             newPost.setUser(userClient.getUserById(userId));
             return postRepository.save(newPost);
         }
-        throw new NoPostTitleException("Title is missing. Title is required in newPost body.");
+        throw new NoPostTitleException("Title is missing. Title is required Post body.");
     }
 
     @Override
-    public String deletePost(int postId) throws PostNotFoundException {
+    public String deletePost(int postId, int userId) throws PostNotFoundException, UnauthorizedActionException {
         if (!postRepository.findById(postId).isPresent())
             throw new PostNotFoundException("The post cannot be deleted. No post of post Id: " + postId + " exists.");
 
-        postRepository.deleteById(postId);
-        sender.sendPostId(String.valueOf(postId));
-        return "post: " + postId + " successfully deleted";
-       // TODO: how to sort out void response to check if post successfully deleted
+        Optional<Post> targetPost = postRepository.findById(postId);
+        if (targetPost.isPresent() && targetPost.get().getUser().getId() == userId) {
+            postRepository.deleteById(postId);
+            sender.sendPostId(String.valueOf(postId));
+            return "post: " + postId + " successfully deleted";
+        }
+
+        throw new UnauthorizedActionException(HttpStatus.UNAUTHORIZED, "You can only delete your own posts");
     }
 
     @Override

@@ -1,10 +1,7 @@
 package com.example.postsapi.controller;
 
 import com.example.postsapi.bean.CommentBean;
-import com.example.postsapi.exceptionhandler.NoPostTitleException;
-import com.example.postsapi.exceptionhandler.PostNotFoundException;
-import com.example.postsapi.exceptionhandler.PostsNotFoundException;
-import com.example.postsapi.exceptionhandler.UserNotFoundException;
+import com.example.postsapi.exceptionhandler.*;
 import com.example.postsapi.feign.CommentClient;
 import com.example.postsapi.model.Post;
 import com.example.postsapi.service.PostServiceImpl;
@@ -110,8 +107,9 @@ public class PostsApiController {
                         value = "The ID of the post to delete. This value is extracted from the {postId} path variable. This value is required.",
                         required = true,
                         example = "1")
-                @PathVariable int postId) throws PostNotFoundException {
-            postService.deletePost(postId);
+                @PathVariable int postId,
+                @RequestHeader("userId") int userId) throws PostNotFoundException, UnauthorizedActionException {
+            postService.deletePost(postId, userId);
             return "Post " + postId + " Deleted";
         }
 
