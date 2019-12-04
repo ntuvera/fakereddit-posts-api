@@ -62,6 +62,7 @@ public class PostsApiControllerTest {
     @Before
     public void init() {
         user.setUsername("testUser");
+        user.setId(1);
 
         comment.setId(1);
         comment.setText("Test Comment Text");
@@ -138,7 +139,8 @@ public class PostsApiControllerTest {
     @Test
     public void deletePost_ReturnStringMsg_Success() throws Exception {
         RequestBuilder requestBuilder = MockMvcRequestBuilders
-                .delete("/{postId}", 1);
+                .delete("/{postId}", 1)
+                .header("userId", user.getId());
 
         when(postService.deletePost(anyInt(), anyInt())).thenReturn("Post 1 Deleted");
 

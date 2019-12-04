@@ -91,7 +91,6 @@ public class PostsApiController {
         return postService.getPostByUserId(userId);
     }
 
-    // TODO: reactivate when we find a way to go around swagger-ui.html
         @ApiOperation(
                 value = "Delete post by post ID",
                 notes = "Allows a user to delete a post using a a post's ID")

@@ -14,19 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 @EnableFeignClients
 @RestController
 public class PostsApiApplication {
-	@GetMapping("/")
-    public String home(){
-		return "GET /posts/";
-	}
 	public static void main(String[] args) {
 		SpringApplication.run(PostsApiApplication.class, args);
 	}
-//	@Bean
-//	public FilterRegistrationBean filterRegistrationBean(){
-//		FilterRegistrationBean filterRegistrationBean = new FilterRegistrationBean();
-//		PrefilterDocConfig swaggerFilter = new PrefilterDocConfig();
-//		filterRegistrationBean.setFilter(swaggerFilter);
-//		return filterRegistrationBean;
-//	}
-
 }
