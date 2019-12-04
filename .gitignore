@@ -29,3 +29,7 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### Logs ###
+post.log
+posts-api.log

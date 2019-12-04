@@ -7,6 +7,8 @@ import com.example.postsapi.feign.UserClient;
 import com.example.postsapi.model.Post;
 import com.example.postsapi.mq.Sender;
 import com.example.postsapi.repository.PostRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -28,11 +30,16 @@ public class PostServiceImpl implements PostService {
     @Autowired
     Sender sender;
 
+    private static final Logger logger = LoggerFactory.getLogger(PostServiceImpl.class);
+
     @Override
     public Post createPost(Post newPost, int userId) throws NoPostTitleException {
         if(newPost.getTitle().trim().length() > 0) {
             newPost.setUser_id(userId);
             newPost.setUser(userClient.getUserById(userId));
+
+            logger.info(">>>>>>>>>> " + newPost.getUser().getUsername() + " just created a new post: " + newPost.getTitle());
+
             return postRepository.save(newPost);
         }
         throw new NoPostTitleException("Title is missing. Title is required Post body.");
@@ -43,13 +50,16 @@ public class PostServiceImpl implements PostService {
         Optional<Post> targetPost = postRepository.findById(postId);
 
         if (!postRepository.findById(postId).isPresent())
-            throw new PostNotFoundException("The post cannot be deleted. No post of post Id: " + postId + " exists.");
+            throw new PostNotFoundException(">>>>>>>>>> " + "The post cannot be deleted. No post of post Id: " + postId + " exists.");
 
         if (targetPost.isPresent() && (targetPost.get().getUser_id() != userId))
             throw new UnauthorizedActionException(HttpStatus.UNAUTHORIZED, "You can only delete your own posts");
 
         postRepository.deleteById(postId);
         sender.sendPostId(String.valueOf(postId));
+
+        logger.info("User id: " + userId + " just deleted a post: " + targetPost.get().getTitle());
+
         return "post: " + postId + " successfully deleted";
     }
 
