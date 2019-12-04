@@ -74,12 +74,8 @@ public class PostsApiController {
                     code = 200,
                     message = "OK",
                     response = Post.class,
-                    responseContainer = "List",
-                    examples = @Example(
-                        value = {
-                                @ExampleProperty(
-                                        mediaType = "Example JSON",
-                                        value = "Sample JSON")})),
+                    responseContainer = "List"
+                    ),
             @ApiResponse(code = 404, message = "The resource you were trying to reach was not found")})
     @GetMapping("/user/post")
     public Iterable<Post> getPostsByUserId(
@@ -91,26 +87,26 @@ public class PostsApiController {
         return postService.getPostByUserId(userId);
     }
 
-        @ApiOperation(
-                value = "Delete post by post ID",
-                notes = "Allows a user to delete a post using a a post's ID")
-        @ApiResponses(value = {
-                @ApiResponse(
-                        code = 200,
-                        message = "OK",
-                        response = String.class),
-                @ApiResponse(code = 404, message = "The resource you were trying to reach was not found")})
-        @DeleteMapping("/{postId}")
-        public String deletePost(
-                @ApiParam(
-                        value = "The ID of the post to delete. This value is extracted from the {postId} path variable. This value is required.",
-                        required = true,
-                        example = "1")
-                @PathVariable int postId,
-                @RequestHeader("userId") int userId) throws PostNotFoundException, UnauthorizedActionException {
-            postService.deletePost(postId, userId);
-            return "Post " + postId + " Deleted";
-        }
+    @ApiOperation(
+            value = "Delete post by post ID",
+            notes = "Allows a user to delete a post using a a post's ID")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    code = 200,
+                    message = "OK",
+                    response = String.class),
+            @ApiResponse(code = 404, message = "The resource you were trying to reach was not found")})
+    @DeleteMapping("/{postId}")
+    public String deletePost(
+            @ApiParam(
+                    value = "The ID of the post to delete. This value is extracted from the {postId} path variable. This value is required.",
+                    required = true,
+                    example = "1")
+            @PathVariable int postId,
+            @RequestHeader("userId") int userId) throws PostNotFoundException, UnauthorizedActionException {
+        postService.deletePost(postId, userId);
+        return "Post " + postId + " Deleted";
+    }
 
     @ApiOperation(
             value = "Get comments by post ID",
