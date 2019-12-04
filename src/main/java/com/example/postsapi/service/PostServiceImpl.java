@@ -38,7 +38,7 @@ public class PostServiceImpl implements PostService {
             newPost.setUser_id(userId);
             newPost.setUser(userClient.getUserById(userId));
 
-            logger.info(">>>>>>>>>> " + newPost.getUser().getUsername() + " just created a new post: " + newPost.getTitle());
+            logger.info(">>>>>>>>>> A new post was created: " + newPost.getTitle());
 
             return postRepository.save(newPost);
         }
