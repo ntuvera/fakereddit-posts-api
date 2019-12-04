@@ -27,11 +27,6 @@ import java.io.IOException;
 @EnableSwagger2
 @RestController
 public class PostsApiApplication {
-
-	@GetMapping("/")
-    public String home(){
-		return "GET /posts/";
-	}
 	public static void main(String[] args) {
 		SpringApplication.run(PostsApiApplication.class, args);
 	}
